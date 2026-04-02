@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Parcel Manager | P05",
-  description: "Modern package management system for buildings",
+  title: "Adquete | Gestión de Encomiendas",
+  description: "Adquete: Administración inteligente de paquetes para edificios residenciales modernos.",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable}`}>
+    <html lang="es" className={`${inter.variable}`}>
       <body>{children}</body>
     </html>
   );
