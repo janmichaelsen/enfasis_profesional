@@ -1,0 +1,23 @@
+{
+  "nav_features": "Features",
+  "nav_login": "Login",
+  "hero_badge": "TICS420 · P05 · Package Management",
+  "hero_title": "Manage your building's packages without complications.",
+  "hero_subtitle": "Adquete centralizes the safe reception, tracking, and delivery of parcels in modern residential buildings.",
+  "btn_concierge": "Try as Concierge",
+  "btn_resident": "See Resident Demo",
+  "stat_buildings": "Active Buildings",
+  "stat_packages": "Managed Packages",
+  "stat_security": "Safe Deliveries",
+  "features_title": "Built for Efficiency",
+  "features_subtitle": "Everything a concierge and a resident need for a digital coexistence.",
+  "f1_title": "Delivery Registry",
+  "f1_desc": "Fast parcel entry with apartment number and automatic notification to the resident.",
+  "f2_title": "Detailed History",
+  "f2_desc": "Complete record with exact dates of reception and pickup. Full traceability.",
+  "f3_title": "QR Pickup",
+  "f3_desc": "Maximum security through unique QR codes so only the authorized resident can pickup.",
+  "f4_title": "Control Panel",
+  "f4_desc": "Real-time dashboard for concierges with package status and claims management.",
+  "footer_copy": "© 2026 TICS420 - Adquete · All rights reserved."
+}

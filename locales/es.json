@@ -1,0 +1,23 @@
+{
+  "nav_features": "Funcionalidades",
+  "nav_login": "Iniciar Sesión",
+  "hero_badge": "TICS420 · P05 · Administración de Paquetes",
+  "hero_title": "Administra los paquetes de tu edificio, sin complicaciones.",
+  "hero_subtitle": "Adquete centraliza la recepción, seguimiento y entrega segura de encomiendas en edificios residenciales modernos.",
+  "btn_concierge": "Probar como Conserje",
+  "btn_resident": "Ver Demo Residente",
+  "stat_buildings": "Edificios Activos",
+  "stat_packages": "Paquetes Gestionados",
+  "stat_security": "Entregas Seguras",
+  "features_title": "Construido para la eficiencia",
+  "features_subtitle": "Todo lo que un conserje y un residente necesitan para una convivencia digital.",
+  "f1_title": "Registro de Entregas",
+  "f1_desc": "Ingreso rápido de encomiendas con número de departamento y notificación automática.",
+  "f2_title": "Historial Detallado",
+  "f2_desc": "Registro completo con fechas exactas de recepción y retiro. Trazabilidad total.",
+  "f3_title": "Retiro con QR",
+  "f3_desc": "Seguridad máxima mediante códigos QR únicos para que solo el residente autorizado retire.",
+  "f4_title": "Panel de Control",
+  "f4_desc": "Dashboard en tiempo real para conserjes con estado de paquetes y gestión de reclamos.",
+  "footer_copy": "© 2026 TICS420 - Adquete · Todos los derechos reservados."
+}
