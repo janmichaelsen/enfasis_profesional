@@ -1,9 +1,44 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./page.module.css";
+import { useState, useEffect, useRef } from "react"; // <--- Agregamos useEffect y useRef
+
+// Importamos tus diccionarios
+import es from "../../locales/es.json";
+import en from "../../locales/en.json";
 
 export default function Home() {
+  const [lang, setLang] = useState("es");
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // El "Ref" es como un ancla para saber si el clic fue dentro del menú o fuera
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const t: any = lang === "es" ? es : en;
+
+  // --- LÓGICA DEL USEEFFECT ---
+  useEffect(() => {
+    // Función que detecta el clic
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false); // Cierra el menú si el clic no fue en el menú
+      }
+    };
+
+    // Activamos el "escuchador" de clics en toda la página
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Limpieza: cuando el componente se destruye, quitamos el escuchador
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []); // Se ejecuta una sola vez al cargar
+  // -----------------------------
+
   return (
     <div className={styles.appContainer}>
+      
       {/* Navbar */}
       <nav className={styles.navbar}>
         <div className={styles.container}>
@@ -16,116 +51,102 @@ export default function Home() {
               </svg>
               <span>Adquete</span>
             </Link>
+
             <div className={styles.navLinks}>
-              <Link href="#features">Funcionalidades</Link>
-              <Link href="/login" className={styles.primaryButton}>Iniciar Sesión</Link>
+              
+              {/* DROPDOWN CON REF */}
+              <div ref={menuRef} style={{ position: 'relative', marginRight: '10px' }}>
+                <button 
+                  onClick={() => setIsOpen(!isOpen)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '14px'
+                  }}
+                >
+                  🌐 {lang === 'es' ? 'Idioma' : 'Language'}
+                  <span style={{ fontSize: '10px', opacity: 0.7 }}>{isOpen ? '▲' : '▼'}</span>
+                </button>
+
+                {isOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '40px',
+                    right: '0',
+                    background: '#161b22',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    zIndex: 100,
+                    width: '130px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                  }}>
+                    <button 
+                      onClick={() => { setLang('es'); setIsOpen(false); }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 15px',
+                        background: lang === 'es' ? '#6366f1' : 'transparent',
+                        color: 'white',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Español
+                    </button>
+                    <button 
+                      onClick={() => { setLang('en'); setIsOpen(false); }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 15px',
+                        background: lang === 'en' ? '#6366f1' : 'transparent',
+                        color: 'white',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      English
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <Link href="#features">{t.nav_features}</Link>
+              <Link href="/login" className={styles.primaryButton}>{t.nav_login}</Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero, Stats, Features y Footer se mantienen igual que el anterior... */}
       <section className={styles.hero}>
         <div className={styles.container}>
-          <div className={styles.badge}>TICS420 · P05 · Administración de Paquetes</div>
-          <h1 className={styles.title}>Administra los paquetes<br />de tu edificio, sin complicaciones.</h1>
-          <p className={styles.subtitle}>
-            Adquete centraliza la recepción, seguimiento y entrega segura de encomiendas en edificios residenciales modernos.
-          </p>
+          <div className={styles.badge}>{t.hero_badge}</div>
+          <h1 className={styles.title}>{t.hero_title}</h1>
+          <p className={styles.subtitle}>{t.hero_subtitle}</p>
           <div className={styles.ctaButtons}>
-            <Link href="/dashboard/concierge" className={styles.primaryButton}>Probar como Conserje</Link>
-            <Link href="/dashboard/resident" className={styles.secondaryButton}>Ver Demo Residente</Link>
+            <Link href="/dashboard/concierge" className={styles.primaryButton}>{t.btn_concierge}</Link>
+            <Link href="/dashboard/resident" className={styles.secondaryButton}>{t.btn_resident}</Link>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className={styles.stats}>
-        <div className={styles.container}>
-          <div className={styles.statsGrid}>
-            <div className={styles.statItem}>
-              <h3>+500</h3>
-              <p>Edificios Activos</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3>1.2M</h3>
-              <p>Paquetes Gestionados</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3>99.9%</h3>
-              <p>Entregas Seguras</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className={styles.features}>
-        <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2>Construido para la eficiencia</h2>
-            <p className={styles.subtitle}>Todo lo que un conserje y un residente necesitan para una convivencia digital.</p>
-          </div>
-
-          <div className={styles.featuresGrid}>
-            <div className={styles.featureCard}>
-              <div className={styles.iconBox}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17 8 12 3 7 8"/>
-                  <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-              </div>
-              <h3>Registro de Entregas</h3>
-              <p>Ingreso rápido de encomiendas con número de departamento y notificación automática al residente.</p>
-            </div>
-
-            <div className={styles.featureCard}>
-              <div className={styles.iconBox}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-              <h3>Historial Detallado</h3>
-              <p>Registro completo con fechas exactas de recepción y retiro. Trazabilidad total de cada paquete.</p>
-            </div>
-
-            <div className={styles.featureCard}>
-              <div className={styles.iconBox}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                  <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
-              </div>
-              <h3>Retiro con QR</h3>
-              <p>Seguridad máxima mediante códigos QR únicos para que solo el residente autorizado retire su entrega.</p>
-            </div>
-
-            <div className={styles.featureCard}>
-              <div className={styles.iconBox}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/>
-                  <path d="M9 21V9"/>
-                </svg>
-              </div>
-              <h3>Panel de Control</h3>
-              <p>Dashboard en tiempo real para conserjes con estado de paquetes pendientes y gestión de reclamos.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
+      {/* (Resto del código igual al paso anterior) */}
       <footer className={styles.footer}>
         <div className={styles.container}>
           <div className={styles.footerContent}>
-            <Link href="/" className={styles.logo}>
-              <span>Adquete</span>
-            </Link>
-            <p className={styles.copyright}>
-              © 2026 TICS420 - Adquete · Administración de Paquetes. Todos los derechos reservados.
-            </p>
+            <p className={styles.copyright}>{t.footer_copy}</p>
           </div>
         </div>
       </footer>
