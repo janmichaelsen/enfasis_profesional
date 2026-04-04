@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+      - "5555:5555"
     environment:
       - DATABASE_URL=postgresql://nextjs:nextjs_password@db:5432/parcel_db
       - NEXTAUTH_SECRET=algun_secreto_super_seguro
@@ -12,6 +13,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # Esta sección es la que faltaba para ver tus archivos locales dentro de Docker
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
 
   db:
     image: postgres:16-alpine
