@@ -35,7 +35,6 @@ model Package {
 }
 
 enum Role {
-  USER
   ADMIN
   CONCIERGE
   RESIDENT
@@ -43,7 +42,7 @@ enum Role {
 
 enum Status {
   PENDING
-  RECIEVED
+  RECEIVED
   DELIVERED
 }
 
@@ -81,3 +80,13 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model TwoFactorToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+
+  @@unique([email, token])
+}
+

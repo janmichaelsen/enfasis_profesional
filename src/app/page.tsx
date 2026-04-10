@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import { useState, useEffect, useRef } from "react"; // <--- Agregamos useEffect y useRef
+import { signIn } from "next-auth/react";
 
 // Importamos tus diccionarios
 import es from "../../locales/es.json";
@@ -11,7 +12,7 @@ import en from "../../locales/en.json";
 export default function Home() {
   const [lang, setLang] = useState("es");
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // El "Ref" es como un ancla para saber si el clic fue dentro del menú o fuera
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -38,25 +39,25 @@ export default function Home() {
 
   return (
     <div className={styles.appContainer}>
-      
+
       {/* Navbar */}
       <nav className={styles.navbar}>
         <div className={styles.container}>
           <div className={styles.navContent}>
             <Link href="/" className={styles.logo}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                <path d="m3.3 7 8.7 5 8.7-5"/>
-                <path d="M12 22V12"/>
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
               </svg>
               <span>Adquete</span>
             </Link>
 
             <div className={styles.navLinks}>
-              
+
               {/* DROPDOWN CON REF */}
               <div ref={menuRef} style={{ position: 'relative', marginRight: '10px' }}>
-                <button 
+                <button
                   onClick={() => setIsOpen(!isOpen)}
                   style={{
                     background: 'rgba(255, 255, 255, 0.05)',
@@ -88,7 +89,7 @@ export default function Home() {
                     width: '130px',
                     boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
                   }}>
-                    <button 
+                    <button
                       onClick={() => { setLang('es'); setIsOpen(false); }}
                       style={{
                         width: '100%',
@@ -103,7 +104,7 @@ export default function Home() {
                     >
                       Español
                     </button>
-                    <button 
+                    <button
                       onClick={() => { setLang('en'); setIsOpen(false); }}
                       style={{
                         width: '100%',
