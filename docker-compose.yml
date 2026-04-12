@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    user: "root"
+    command: sh -c "npm install && npx prisma generate && npx prisma db push && npm run dev"
+    env_file:
+      - .env
     ports:
       - "3000:3000"
       - "5555:5555"
@@ -17,7 +21,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.next
 
   db:
     image: postgres:16-alpine

@@ -1,39 +1,27 @@
-# Etapa 1: Dependencias
-FROM node:20-alpine AS deps
+FROM node:20-alpine
+
+# Instalamos libc6-compat porque es necesaria para que Prisma y otras librerías funcionen en Alpine
 RUN apk add --no-cache libc6-compat
+
 WORKDIR /app
+
+# Solo copiamos los archivos de dependencias para aprovechar la caché de Docker
 COPY package*.json ./
+COPY prisma ./prisma/
+
+# Instalamos todo
 RUN npm install
 
-# Etapa 2: Build
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Generamos el cliente de Prisma (fundamental para que no de errores de tipos)
+RUN npx prisma generate
+
+# Copiamos el resto del código
 COPY . .
-# Deshabilitar telemetría de Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build
 
-# Etapa 3: Producción
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Usuarios de sistema para seguridad
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# Optimizando la salida del build (stand-alone si está configurado, si no, todo .next)
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-
-USER nextjs
+# En desarrollo no hacemos "npm run build" aquí. 
+# Dejamos que el comando venga desde el docker-compose.yaml
 
 EXPOSE 3000
-ENV PORT 3000
 
-CMD ["npm", "start"]
+# El comando por defecto (aunque el docker-compose lo sobrescribirá)
+CMD ["npm", "run", "dev"]
