@@ -1,27 +1,34 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/prisma" // Asegúrate de tener este export en tu proyecto
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    providers: [
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        }),
-    ],
-    callbacks: {
-        // Aquí es donde vincularemos el OTP y los Roles más adelante
-        async session({ session, user }) {
-            if (session.user) {
-                session.user.id = user.id;
-                // session.user.role = user.role; // Esto lo activaremos cuando probemos los roles
-            }
-            return session;
-        },
+  // Usamos "as any" para que TypeScript no se queje de que el modelo User 
+  // en Prisma tiene campos extra (como 'role') que el Adapter estándar no conoce.
+  adapter: PrismaAdapter(prisma) as any,
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Esto ayuda a evitar errores de PKCE/Cookies en entornos locales
+      allowDangerousEmailAccountLinking: true,
+    }),
+  ],
+  callbacks: {
+    // El evento 'session' ocurre cada vez que el cliente pregunta por la sesión
+    // Aquí es donde inyectamos el ID y el ROLE para usarlos en el Dashboard
+    async session({ session, user }: any) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role; 
+      }
+      return session;
     },
-    pages: {
-        signIn: "/login", // Tu página personalizada de login
-    },
-})
+  },
+  // Configuración de páginas personalizadas (opcional)
+  pages: {
+    signIn: "/login",
+    error: "/api/auth/error",
+  },
+});
