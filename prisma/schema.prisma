@@ -17,19 +17,23 @@ model User {
   emailVerified DateTime?
   image         String?
   role          Role      @default(RESIDENT)
+  department    String?   // Asignado por el conserje, NO por el residente
   accounts      Account[]
   sessions      Session[]
   packages      Package[]
 }
 
 model Package {
-  id          String   @id @default(cuid())
-  trackingId  String   @unique
+  id          String      @id @default(cuid())
+  trackingId  String      @unique
   description String?
-  status      Status   @default(PENDING)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  recipient   User?    @relation(fields: [recipientId], references: [id])
+  department  String      // Número de departamento (requerido por rúbrica)
+  type        PackageType @default(REGULAR)
+  status      Status      @default(RECEIVED)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deliveredAt DateTime?   // Fecha de retiro/entrega
+  recipient   User?       @relation(fields: [recipientId], references: [id])
   recipientId String?
   weight      Float?
 }
@@ -38,6 +42,12 @@ enum Role {
   ADMIN
   CONCIERGE
   RESIDENT
+}
+
+enum PackageType {
+  REGULAR    // Paquete normal
+  PERISHABLE // Perecedero (comida, supermercado) - notificación urgente
+  URGENT     // Urgente
 }
 
 enum Status {

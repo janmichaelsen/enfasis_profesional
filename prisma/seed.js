@@ -27,12 +27,14 @@ async function main() {
 
   console.log('✅ Usuarios creados')
 
-  // 3. Crear Paquetes
+  // 3. Crear Paquetes con los nuevos campos
   await prisma.package.create({
     data: {
-      trackingId: 'TRK-001-PENDING',
+      trackingId: 'TRK-001-AMZ',
       description: 'Caja Grande - Amazon',
-      status: 'PENDING',
+      department: '402',
+      type: 'REGULAR',
+      status: 'RECEIVED',
       weight: 2.5,
       recipientId: resident.id,
     },
@@ -40,15 +42,40 @@ async function main() {
 
   await prisma.package.create({
     data: {
-      trackingId: 'TRK-002-DELIVERED',
+      trackingId: 'TRK-002-ML',
       description: 'Sobre - Mercado Libre',
+      department: '402',
+      type: 'REGULAR',
       status: 'DELIVERED',
       weight: 0.5,
+      deliveredAt: new Date(),
       recipientId: resident.id,
     },
   })
 
-  console.log('✅ Paquetes de prueba creados')
+  await prisma.package.create({
+    data: {
+      trackingId: 'TRK-003-FOOD',
+      description: 'Pedido Supermercado - Perecedero',
+      department: '1201',
+      type: 'PERISHABLE',
+      status: 'RECEIVED',
+      weight: 5.0,
+    },
+  })
+
+  await prisma.package.create({
+    data: {
+      trackingId: 'TRK-004-URG',
+      description: 'Documentos Legales Urgentes',
+      department: '803',
+      type: 'URGENT',
+      status: 'RECEIVED',
+      weight: 0.3,
+    },
+  })
+
+  console.log('✅ Paquetes de prueba creados (Regular, Perecedero, Urgente)')
   console.log('--- Siembra completada con éxito ---')
 }
 

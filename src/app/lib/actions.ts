@@ -4,22 +4,40 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
 // Acción para GUARDAR un nuevo paquete
+// Busca automáticamente al residente del departamento y le asigna el paquete
 export async function createPackage(formData: FormData) {
   const trackingId = formData.get("trackingId") as string
   const description = formData.get("description") as string
+  const department = formData.get("department") as string
+  const type = (formData.get("type") as string) || "REGULAR"
   const weight = formData.get("weight") ? parseFloat(formData.get("weight") as string) : null
 
+  if (!trackingId || !department) {
+    throw new Error("Tracking ID y Departamento son obligatorios")
+  }
+
   try {
+    // Buscar al residente asignado a este departamento
+    const resident = await prisma.user.findFirst({
+      where: {
+        department: department,
+        role: "RESIDENT",
+      },
+    })
+
     await prisma.package.create({
       data: {
         trackingId,
         description,
+        department,
+        type: type as any,
         weight,
         status: "RECEIVED",
+        // Si encontramos un residente en ese depto, se le asigna automáticamente
+        recipientId: resident?.id || null,
       },
     })
     
-    // Forzamos a Next.js a refrescar los datos del dashboard
     revalidatePath("/dashboard")
   } catch (error) {
     console.error("Error al crear paquete:", error)
@@ -34,8 +52,7 @@ export async function deliverPackage(packageId: string) {
       where: { id: packageId },
       data: { 
         status: "DELIVERED",
-        // Aquí podrías agregar una fecha de entrega si tuvieras el campo:
-        // deliveredAt: new Date() 
+        deliveredAt: new Date(),
       },
     })
     
