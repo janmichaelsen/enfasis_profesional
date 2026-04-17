@@ -8,13 +8,15 @@ import { sendOTP, verifyOTP } from "@/actions/auth-actions";
 export default function OTPPage() {
   const { data: session, update, status } = useSession();
   const router = useRouter();
-  
+
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
   // Redirigir al dashboard si ya está validado o al login si no hay sesión inicial
+  // Con UseEffect se vigila si alguien ya validó su OTP hoy y de ser el caso lo saca directo al dashboard
+  // Si no hay sesión, lo manda al login
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -25,7 +27,7 @@ export default function OTPPage() {
 
   const handleSendOTP = async () => {
     if (!session?.user?.email) return;
-    
+
     setError("");
     setMessage("");
 
@@ -53,7 +55,7 @@ export default function OTPPage() {
         setError(res.error);
       } else if (res.success) {
         setMessage(res.success);
-        // Actualizamos la sesión en NextAuth para estampar la variable isTwoFactorVerified
+        // Recarga la sesión del usuario guardando la variable true para que el proxy sepa que ya pasamos el OTP
         await update({ isTwoFactorVerified: true });
         router.push("/dashboard");
       }
@@ -72,11 +74,11 @@ export default function OTPPage() {
             Verificación de Seguridad
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Hemos detectado un inicio de sesión para <br/>
+            Hemos detectado un inicio de sesión para <br />
             <span className="font-semibold">{session.user.email}</span>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleVerify}>
           <div>
             <label htmlFor="code" className="sr-only">Código OTP</label>
@@ -88,7 +90,7 @@ export default function OTPPage() {
               maxLength={6}
               disabled={isPending}
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} // Solo números
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} // Solo se pueden ingresar números, no otro tipo de carácter
               className="relative block w-full rounded-md border-0 py-3 text-center text-2xl tracking-[0.5em] text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6"
               placeholder="000000"
             />
@@ -112,7 +114,7 @@ export default function OTPPage() {
             disabled={isPending}
             className="text-indigo-600 hover:text-indigo-500 text-sm font-semibold hover:underline"
           >
-            Solicitar código a mi consola/correo
+            Solicitar código a mi correo
           </button>
         </div>
 

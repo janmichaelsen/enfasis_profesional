@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { sendOTPEmail } from "@/lib/mail";
 
 export async function sendOTP(email: string) {
   try {
@@ -12,16 +13,8 @@ export async function sendOTP(email: string) {
     const salt = await bcrypt.genSalt(10);
     const hashedCode = await bcrypt.hash(code, salt);
 
-    // Se imprime el código y su hash en consola temporalmente simulando el envío de email (para probar temporalmente)
-    console.log(`\n=================================================`);
-    console.log(`[SEGURIDAD - OTP SOLICITADO]`);
-    console.log(`Email Objetivo: ${email}`);
-    console.log(`CÓDIGO GENERADO: ${code}`);
-    console.log(`HASH (Que se guarda en BD): ${hashedCode}`);
-    console.log(`=================================================\n`);
-
-    // Expiración de 10 minutos
-    const expires = new Date(new Date().getTime() + 10 * 60 * 1000);
+    // Definir expiración (ejemplo: 5 minutos)
+    const expires = new Date(new Date().getTime() + 5 * 60 * 1000);
 
     // Se borra el token anterior si el usuario apretó enviar dos veces
     const existingToken = await prisma.twoFactorToken.findFirst({
@@ -43,7 +36,14 @@ export async function sendOTP(email: string) {
       },
     });
 
-    return { success: "¡Código OTP generado y enviado! (Revisa tu consola)" };
+    // Se envía el correo con el código y se verifica si se envió correctamente 
+    const emailSent = await sendOTPEmail(email, code);
+
+    if (!emailSent) {
+      return { error: "No pudimos enviar el correo. Revisa tus credenciales o conexión." }
+    }
+
+    return { success: "¡Código OTP enviado a tu bandeja de correo!" };
   } catch (error) {
     console.error("Error al generar OTP:", error);
     return { error: "Hubo un error del servidor. Inténtalo más tarde." };
