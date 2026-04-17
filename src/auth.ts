@@ -7,6 +7,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // Usamos "as any" para que TypeScript no se queje de que el modelo User 
   // en Prisma tiene campos extra (como 'role') que el Adapter estándar no conoce.
   adapter: PrismaAdapter(prisma) as any,
+  session: { strategy: "jwt" },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -16,12 +17,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    // El evento 'session' ocurre cada vez que el cliente pregunta por la sesión
-    // Aquí es donde inyectamos el ID y el ROLE para usarlos en el Dashboard
-    async session({ session, user }: any) {
-      if (session.user) {
-        session.user.id = user.id;
-        session.user.role = user.role; 
+    async jwt({ token, user, trigger, session }) {
+      // El evento 'jwt' intercepta el inicio de sesión
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        // Inmediatamente después del SSO, marcamos a la sesión como NO verificada por OTP:
+        token.isTwoFactorVerified = false; 
+      }
+      // Si recibimos una petición manual de "revalidar estado" después de poner el OTP:
+      if (trigger === "update" && session?.isTwoFactorVerified) {
+        token.isTwoFactorVerified = true;
+      }
+      return token;
+    },
+    async session({ session, token }: any) {
+      // El evento session inyecta lo que hay en el token hacia el frontend
+      if (token) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.isTwoFactorVerified = token.isTwoFactorVerified;
       }
       return session;
     },
