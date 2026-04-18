@@ -57,7 +57,8 @@ export default function OTPPage() {
         setMessage(res.success);
         // Recarga la sesión del usuario guardando la variable true para que el proxy sepa que ya pasamos el OTP
         await update({ isTwoFactorVerified: true });
-        router.push("/dashboard");
+        // Forzamos la navegación natural del navegador para que el proxy (middleware) capture las nuevas cookies correctamente
+        window.location.href = "/dashboard";
       }
     });
   };

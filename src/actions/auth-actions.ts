@@ -13,8 +13,8 @@ export async function sendOTP(email: string) {
     const salt = await bcrypt.genSalt(10);
     const hashedCode = await bcrypt.hash(code, salt);
 
-    // Definir expiración (ejemplo: 5 minutos)
-    const expires = new Date(new Date().getTime() + 5 * 60 * 1000);
+    // Definir expiración (10 minutos para coincidir con el correo)
+    const expires = new Date(new Date().getTime() + 10 * 60 * 1000);
 
     // Se borra el token anterior si el usuario apretó enviar dos veces
     const existingToken = await prisma.twoFactorToken.findFirst({
