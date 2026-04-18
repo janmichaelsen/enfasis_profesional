@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { createPackage, deliverPackage } from "@/app/lib/actions";
 import { signOut } from "next-auth/react";
-import es from "../../../locales/es.json";
-import en from "../../../locales/en.json";
+import es from "../../locales/es.json";
+import en from "../../locales/en.json";
 
 interface PackageItem {
   id: string;
@@ -33,6 +33,8 @@ export default function DashboardClient({ userName, userRole, userId, initialPac
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [residents, setResidents] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchDate, setSearchDate] = useState("");
 
   const t: any = lang === "es" ? es : en;
   const isConcierge = userRole === "CONCIERGE" || userRole === "ADMIN";
@@ -115,6 +117,19 @@ export default function DashboardClient({ userName, userRole, userId, initialPac
     (p) => p.type === "PERISHABLE" || p.type === "URGENT"
   );
 
+  const filteredPackages = packages.filter((p) => {
+    const matchesText = 
+      p.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.description?.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesDate = searchDate 
+      ? new Date(p.createdAt).toLocaleDateString() === new Date(searchDate + "T12:00:00").toLocaleDateString()
+      : true;
+
+    return matchesText && matchesDate;
+  });
+
   return (
     <main style={{
       minHeight: "100vh",
@@ -194,6 +209,36 @@ export default function DashboardClient({ userName, userRole, userId, initialPac
             </button>
           </div>
         </header>
+        
+        {/* ========== STATS OVERVIEW ========== */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "1rem",
+          marginBottom: "2rem"
+        }}>
+          <div style={statCardStyle}>
+            <span style={{ fontSize: "20px" }}>📦</span>
+            <div>
+              <p style={statLabelStyle}>{lang === "es" ? "Total Encomiendas" : "Total Packages"}</p>
+              <p style={statValueStyle}>{packages.length}</p>
+            </div>
+          </div>
+          <div style={statCardStyle}>
+            <span style={{ fontSize: "20px" }}>🚚</span>
+            <div>
+              <p style={statLabelStyle}>{lang === "es" ? "Por Entregar" : "Pending Delivery"}</p>
+              <p style={statValueStyle}>{pendingPackages.length}</p>
+            </div>
+          </div>
+          <div style={statCardStyle}>
+            <span style={{ fontSize: "20px" }}>⚠️</span>
+            <div>
+              <p style={statLabelStyle}>{lang === "es" ? "Urgentes" : "Urgent/Perishable"}</p>
+              <p style={statValueStyle}>{perishableOrUrgent.length}</p>
+            </div>
+          </div>
+        </div>
 
         {/* ========== CONTENIDO SEGÚN ROL ========== */}
         {isConcierge ? (
@@ -373,10 +418,61 @@ export default function DashboardClient({ userName, userRole, userId, initialPac
               <section>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "1rem" }}>
                   <h2 style={{ fontSize: "1.25rem", fontWeight: 600, color: "#e6edf3", margin: 0 }}>{t.dash_inventory_title}</h2>
-                  <p style={{ fontSize: "12px", color: "#484f58", margin: 0 }}>{packages.length} {t.dash_inventory_total}</p>
+                  <p style={{ fontSize: "12px", color: "#484f58", margin: 0 }}>{filteredPackages.length} {t.dash_inventory_total}</p>
                 </div>
 
-                {packages.length === 0 ? (
+                {/* Barra de Búsqueda + Filtro Fecha */}
+                <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                  <div style={{ position: "relative", flex: 1, minWidth: "200px" }}>
+                     <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", opacity: 0.5 }}>🔍</span>
+                     <input 
+                       type="text"
+                       placeholder={lang === "es" ? "Buscar por depto, tracking o descripción..." : "Search by dept, tracking or description..."}
+                       value={searchTerm}
+                       onChange={(e) => setSearchTerm(e.target.value)}
+                       style={{
+                         ...inputStyle,
+                         width: "100%",
+                         paddingLeft: "40px",
+                         background: "#161b22",
+                         borderColor: searchTerm ? "#1f6feb" : "#30363d"
+                       }}
+                     />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <input
+                      type="date"
+                      value={searchDate}
+                      onChange={(e) => setSearchDate(e.target.value)}
+                      style={{
+                        ...inputStyle,
+                        background: "#161b22",
+                        borderColor: searchDate ? "#1f6feb" : "#30363d",
+                        cursor: "pointer",
+                        colorScheme: "dark",
+                      }}
+                    />
+                    {searchDate && (
+                      <button
+                        onClick={() => setSearchDate("")}
+                        style={{
+                          background: "rgba(248, 81, 73, 0.1)",
+                          color: "#f85149",
+                          border: "1px solid rgba(248, 81, 73, 0.2)",
+                          borderRadius: "8px",
+                          padding: "8px 12px",
+                          fontSize: "11px",
+                          cursor: "pointer",
+                          fontWeight: 700,
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {filteredPackages.length === 0 ? (
                   <div style={{
                     background: "#161b22",
                     border: "1px solid #21262d",
@@ -389,7 +485,7 @@ export default function DashboardClient({ userName, userRole, userId, initialPac
                   </div>
                 ) : (
                   <div style={{ display: "grid", gap: "0.75rem" }}>
-                    {packages.map((pkg) => (
+                    {filteredPackages.map((pkg) => (
                       <div key={pkg.id} style={{
                         background: "#161b22",
                         border: `1px solid ${pkg.type === "PERISHABLE" ? "rgba(210, 153, 34, 0.3)" : pkg.type === "URGENT" ? "rgba(248, 81, 73, 0.3)" : "#21262d"}`,
@@ -719,4 +815,29 @@ const deliveredBadgeStyle: React.CSSProperties = {
   textTransform: "uppercase",
   fontWeight: 700,
   border: "1px solid #30363d",
+};
+
+const statCardStyle: React.CSSProperties = {
+  background: "#161b22",
+  border: "1px solid #30363d",
+  borderRadius: "16px",
+  padding: "1.25rem",
+  display: "flex",
+  alignItems: "center",
+  gap: "1rem",
+};
+
+const statLabelStyle: React.CSSProperties = {
+  fontSize: "11px",
+  color: "#8b949e",
+  margin: 0,
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+};
+
+const statValueStyle: React.CSSProperties = {
+  fontSize: "20px",
+  fontWeight: 800,
+  color: "#e6edf3",
+  margin: 0,
 };

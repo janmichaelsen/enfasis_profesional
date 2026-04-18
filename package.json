@@ -36,5 +36,8 @@
   },
   "trustedDependencies": [
     "unrs-resolver"
-  ]
+  ],
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
 }

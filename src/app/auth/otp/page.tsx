@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { sendOTP, verifyOTP } from "@/actions/auth-actions";
 
@@ -129,6 +129,15 @@ export default function OTPPage() {
             {message}
           </div>
         )}
+
+        <div className="text-center pt-2">
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="text-xs text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest font-bold"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
       </div>
     </div>
   );

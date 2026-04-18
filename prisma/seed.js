@@ -4,12 +4,11 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('--- Iniciando siembra de datos (Seed) ---')
 
-
   // Se borran solo los paquetes para la demo
   await prisma.package.deleteMany({})
 
-  // Acceso como conserje
-  const me = await prisma.user.upsert({
+  // Acceso como conserje (Jan)
+  await prisma.user.upsert({
     where: { email: 'jmichaelsenthiel@gmail.com' },
     update: { role: 'CONCIERGE' },
     create: {
@@ -19,30 +18,18 @@ async function main() {
     },
   })
 
-  // Usuario de apoyo para la DEMO
-  const manuel = await prisma.user.upsert({
-    where: { email: 'manuel@edificio.com' },
+  // Tu acceso real como CONCIERGE (Sin punto)
+  await prisma.user.upsert({
+    where: { email: 'felipealvarezmer@gmail.com' },
     update: { role: 'CONCIERGE' },
     create: {
-      name: 'Conserje Manuel',
-      email: 'manuel@edificio.com',
+      name: 'Felipe Conserje',
+      email: 'felipealvarezmer@gmail.com',
       role: 'CONCIERGE',
     },
   })
 
-  // Usuario Residente para probar asignaciones
-  const felipe = await prisma.user.upsert({
-    where: { email: 'felipe@departamento.com' },
-    update: { role: 'RESIDENT' },
-    create: {
-      name: 'Felipe Residente',
-      email: 'felipe@departamento.com',
-      role: 'RESIDENT',
-    },
-  })
-
   console.log('Usuarios sincronizados con roles correctos')
-
 
   // Paquetes de ejemplo para demo
   await prisma.package.createMany({
@@ -54,7 +41,6 @@ async function main() {
         type: 'REGULAR',
         status: 'RECEIVED',
         weight: 2.5,
-        recipientId: felipe.id,
       },
       {
         trackingId: 'TRK-003-FOOD',
@@ -68,6 +54,7 @@ async function main() {
   })
 
   console.log('Datos de encomiendas listos para la Prueba 1')
+  console.log('--- Siembra completada con éxito ---')
 }
 
 main()
