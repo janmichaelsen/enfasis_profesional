@@ -1,34 +1,12 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    user: "root"
-    command: sh -c "npm install && npx prisma generate && npx prisma db push && npm run dev"
-    env_file:
-      - .env
-    ports:
-      - "3000:3000"
-      - "5555:5555"
-    environment:
-      - DATABASE_URL=postgresql://nextjs:nextjs_password@db:5432/parcel_db
-      - NEXTAUTH_SECRET=algun_secreto_super_seguro
-      - NEXTAUTH_URL=http://localhost:3000
-    depends_on:
-      db:
-        condition: service_healthy
-    # Esta sección es la que faltaba para ver tus archivos locales dentro de Docker
-    volumes:
-      - .:/app
-      - /app/node_modules
-
   db:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
+    container_name: postgres_db
     restart: always
     environment:
       POSTGRES_USER: nextjs
-      POSTGRES_DB: parcel_db
       POSTGRES_PASSWORD: nextjs_password
+      POSTGRES_DB: parcel_db
     ports:
       - "5432:5432"
     volumes:
@@ -38,6 +16,25 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  app:
+    build: .
+    container_name: nextjs_app
+    restart: always
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    env_file:
+      - .env
+    environment:
+      # Se comunica con el servicio 'db'
+      - DATABASE_URL=postgresql://nextjs:nextjs_password@db:5432/parcel_db?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:

@@ -1,27 +1,25 @@
 FROM node:20-alpine
 
-# Instalamos libc6-compat porque es necesaria para que Prisma y otras librerías funcionen en Alpine
-RUN apk add --no-cache libc6-compat
+# Instalamos dependencias de sistema esenciales para Prisma y compilación
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-# Solo copiamos los archivos de dependencias para aprovechar la caché de Docker
+# Copiamos solo archivos de dependencias
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalamos todo
-RUN npm install
-
-# Generamos el cliente de Prisma (fundamental para que no de errores de tipos)
-RUN npx prisma generate
+# Instalación ignorando el conflicto de versiones de NextAuth v5
+RUN npm install --legacy-peer-deps
 
 # Copiamos el resto del código
 COPY . .
 
-# En desarrollo no hacemos "npm run build" aquí. 
-# Dejamos que el comando venga desde el docker-compose.yaml
+# Generamos el cliente de Prisma para Linux
+RUN npx prisma generate
 
 EXPOSE 3000
+EXPOSE 5555
 
-# El comando por defecto (aunque el docker-compose lo sobrescribirá)
-CMD ["npm", "run", "dev"]
+# El comando de inicio automatizado (Sincroniza DB, abre Studio y corre la App)
+CMD sh -c "npx prisma db push && (npx prisma studio --port 5555 &) && npm run dev"
