@@ -15,7 +15,6 @@ export default function OTPPage() {
   const [isPending, startTransition] = useTransition();
 
   // Redirigir al dashboard si ya está validado o al login si no hay sesión inicial
-  // Con UseEffect se vigila si alguien ya validó su OTP hoy y de ser el caso lo saca directo al dashboard
   // Si no hay sesión, lo manda al login
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -57,7 +56,7 @@ export default function OTPPage() {
         setMessage(res.success);
         // Recarga la sesión del usuario guardando la variable true para que el proxy sepa que ya pasamos el OTP
         await update({ isTwoFactorVerified: true });
-        // Forzamos la navegación natural del navegador para que el proxy (middleware) capture las nuevas cookies correctamente
+        // Forzamos la navegación natural del navegador para que el proxy capture las nuevas cookies correctamente
         window.location.href = "/dashboard";
       }
     });

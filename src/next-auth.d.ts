@@ -7,4 +7,8 @@ declare module "next-auth" {
       isTwoFactorVerified?: boolean;
     } & DefaultSession["user"]
   }
+
+  interface User {
+    role?: string;
+  }
 }

@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 
 export const sendOTPEmail = async (email: string, token: string) => {
   try {
-    // Se configura el transportador usando SMTP de Gmail, usando los datos de nuestro .env
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,

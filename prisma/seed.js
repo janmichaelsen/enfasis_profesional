@@ -18,7 +18,7 @@ async function main() {
     },
   })
 
-  // Tu acceso real como CONCIERGE (Sin punto)
+  // Acceso como conserje (Felipe)
   await prisma.user.upsert({
     where: { email: 'felipealvarezmer@gmail.com' },
     update: { role: 'CONCIERGE' },

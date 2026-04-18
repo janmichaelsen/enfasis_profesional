@@ -3,19 +3,17 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { sendOTPEmail } from "@/lib/mail";
-import { signIn } from "@/auth"; // <--- Agregamos esta importación
+import { signIn } from "@/auth";
 
-// --- FUNCIÓN PARA GOOGLE (La que le faltaba a tu botón) ---
 export async function handleGoogleSignIn() {
   try {
     await signIn("google");
   } catch (error) {
-    // Es vital lanzar el error para que Auth.js maneje el redireccionamiento
+    // Se lanza el error para que Auth.js maneje el redireccionamiento
     throw error;
   }
 }
 
-// --- TUS FUNCIONES DE OTP (Las que ya tenías) ---
 export async function sendOTP(email: string) {
   try {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
