@@ -1,155 +1,98 @@
 "use client";
 
 import Link from "next/link";
-import styles from "./page.module.css";
-import { useState, useEffect, useRef } from "react"; // <--- Agregamos useEffect y useRef
-import { signIn } from "next-auth/react";
-
-// Importamos tus diccionarios
-import es from "../../locales/es.json";
-import en from "../../locales/en.json";
+import { useState, useEffect, useRef } from "react";
+import { 
+  Package, 
+  ChevronDown, 
+  Check, 
+  ShieldCheck, 
+  UserCircle2 
+} from "lucide-react"; 
+import es from "@/locales/es.json";
+import en from "@/locales/en.json";
 
 export default function Home() {
   const [lang, setLang] = useState("es");
   const [isOpen, setIsOpen] = useState(false);
-
-  // El "Ref" es como un ancla para saber si el clic fue dentro del menú o fuera
   const menuRef = useRef<HTMLDivElement>(null);
-
   const t: any = lang === "es" ? es : en;
 
-  // --- LÓGICA DEL USEEFFECT ---
   useEffect(() => {
-    // Función que detecta el clic
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false); // Cierra el menú si el clic no fue en el menú
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setIsOpen(false);
     };
-
-    // Activamos el "escuchador" de clics en toda la página
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Limpieza: cuando el componente se destruye, quitamos el escuchador
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []); // Se ejecuta una sola vez al cargar
-  // -----------------------------
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <div className={styles.appContainer}>
-
-      {/* Navbar */}
-      <nav className={styles.navbar}>
-        <div className={styles.container}>
-          <div className={styles.navContent}>
-            <Link href="/" className={styles.logo}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                <path d="m3.3 7 8.7 5 8.7-5" />
-                <path d="M12 22V12" />
-              </svg>
-              <span>Adquete</span>
-            </Link>
-
-            <div className={styles.navLinks}>
-
-              {/* DROPDOWN CON REF */}
-              <div ref={menuRef} style={{ position: 'relative', marginRight: '10px' }}>
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '14px'
-                  }}
-                >
-                  🌐 {lang === 'es' ? 'Idioma' : 'Language'}
-                  <span style={{ fontSize: '10px', opacity: 0.7 }}>{isOpen ? '▲' : '▼'}</span>
-                </button>
-
-                {isOpen && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '40px',
-                    right: '0',
-                    background: '#161b22',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    zIndex: 100,
-                    width: '130px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                  }}>
-                    <button
-                      onClick={() => { setLang('es'); setIsOpen(false); }}
-                      style={{
-                        width: '100%',
-                        padding: '10px 15px',
-                        background: lang === 'es' ? '#6366f1' : 'transparent',
-                        color: 'white',
-                        border: 'none',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        fontSize: '14px'
-                      }}
-                    >
-                      Español
+    <div className="min-h-screen bg-[#0a0c14] text-white font-sans selection:bg-indigo-500/30">
+      <nav className="border-b border-white/5 py-5 px-6 md:px-12 sticky top-0 bg-[#0a0c14]/80 backdrop-blur-xl z-[100]">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-3 no-underline group">
+            <div className="bg-gradient-to-br from-indigo-600 to-blue-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-indigo-500/10">
+              <Package size={26} className="text-white" />
+            </div>
+            <span className="font-black text-2xl tracking-tighter text-white">Adquete</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <div ref={menuRef} className="relative w-[130px]">
+              <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border transition-all duration-300 ${isOpen ? 'bg-white/10 border-indigo-500/50 text-white shadow-[0_0_20px_rgba(79,130,246,0.1)]' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-white'}`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base leading-none">{lang === 'es' ? '🇪🇸' : '🇬🇧'}</span>
+                  <span className="text-xs font-black uppercase tracking-widest">{lang}</span>
+                </div>
+                <ChevronDown size={14} className={`transition-transform duration-300 opacity-40 ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isOpen && (
+                <div className="absolute top-[calc(100%+12px)] right-0 w-48 bg-[#161b22]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] animate-in fade-in zoom-in-95 duration-200 z-[110]">
+                  <div className="p-1.5">
+                    <button onClick={() => {setLang('es'); setIsOpen(false)}} className={`w-full p-3 rounded-xl text-left text-sm flex items-center justify-between transition-all ${lang === 'es' ? 'bg-indigo-600 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+                      <div className="flex items-center gap-3"><span>🇪🇸</span> Español</div>
+                      {lang === 'es' && <Check size={14} />}
                     </button>
-                    <button
-                      onClick={() => { setLang('en'); setIsOpen(false); }}
-                      style={{
-                        width: '100%',
-                        padding: '10px 15px',
-                        background: lang === 'en' ? '#6366f1' : 'transparent',
-                        color: 'white',
-                        border: 'none',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        fontSize: '14px'
-                      }}
-                    >
-                      English
+                    <button onClick={() => {setLang('en'); setIsOpen(false)}} className={`w-full p-3 rounded-xl text-left text-sm flex items-center justify-between transition-all mt-1 ${lang === 'en' ? 'bg-indigo-600 text-white font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+                      <div className="flex items-center gap-3"><span>🇬🇧</span> English</div>
+                      {lang === 'en' && <Check size={14} />}
                     </button>
                   </div>
-                )}
-              </div>
-
-              <Link href="#features">{t.nav_features}</Link>
-              <Link href="/login" className={styles.primaryButton}>{t.nav_login}</Link>
+                </div>
+              )}
             </div>
+            <Link href={`/login?lang=${lang}`} className="bg-white text-black px-7 py-2.5 rounded-full font-bold text-sm whitespace-nowrap hover:bg-gray-200 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-white/5">
+              {t.nav_login}
+            </Link>
           </div>
         </div>
       </nav>
-
-      {/* Hero, Stats, Features y Footer se mantienen igual que el anterior... */}
-      <section className={styles.hero}>
-        <div className={styles.container}>
-          <div className={styles.badge}>{t.hero_badge}</div>
-          <h1 className={styles.title}>{t.hero_title}</h1>
-          <p className={styles.subtitle}>{t.hero_subtitle}</p>
-          <div className={styles.ctaButtons}>
-            <Link href="/dashboard/concierge" className={styles.primaryButton}>{t.btn_concierge}</Link>
-            <Link href="/dashboard/resident" className={styles.secondaryButton}>{t.btn_resident}</Link>
+      <main className="relative pt-32 pb-24 px-6 text-center overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/5 blur-[120px] rounded-full -z-10" />
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[11px] font-black uppercase tracking-[0.2em] mb-12 border border-indigo-500/20">
+            {t.hero_badge}
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black mb-10 tracking-tight leading-[1.3] text-white">
+            {t.hero_title}
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-16 leading-relaxed">
+            {t.hero_subtitle}
+          </p>
+          <div className="flex flex-wrap justify-center gap-5">
+            <Link href={`/login?role=concierge&lang=${lang}`} className="bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-[24px] font-bold flex items-center gap-3 transition-all hover:-translate-y-1 shadow-2xl shadow-indigo-500/30">
+              <ShieldCheck size={24} /> {t.btn_concierge}
+            </Link>
+            <Link href={`/login?role=resident&lang=${lang}`} className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-10 py-5 rounded-[24px] font-bold flex items-center gap-3 transition-all hover:bg-white/10">
+              <UserCircle2 size={24} /> {t.btn_resident}
+            </Link>
           </div>
         </div>
-      </section>
-
-      {/* (Resto del código igual al paso anterior) */}
-      <footer className={styles.footer}>
-        <div className={styles.container}>
-          <div className={styles.footerContent}>
-            <p className={styles.copyright}>{t.footer_copy}</p>
-          </div>
-        </div>
+      </main>
+      <footer className="border-t border-white/5 py-12 text-center">
+        <p className="text-gray-600 text-sm font-medium">{t.footer_copy}</p>
       </footer>
     </div>
   );

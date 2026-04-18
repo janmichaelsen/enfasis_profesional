@@ -13,6 +13,7 @@
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.4.27",
     "bcryptjs": "^3.0.3",
+    "lucide-react": "^1.8.0",
     "next": "16.2.1",
     "next-auth": "^5.0.0-beta.30",
     "nodemailer": "^8.0.5",
@@ -22,7 +23,7 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "@prisma/client": "^6.19.3",
+    "@prisma/client": "^5.21.1",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "20.19.39",
     "@types/nodemailer": "^8.0.0",
@@ -30,7 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
-    "prisma": "^6.19.3",
+    "prisma": "^5.21.1",
     "typescript": "^5"
   },
   "trustedDependencies": [

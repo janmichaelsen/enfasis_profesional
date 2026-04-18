@@ -21,11 +21,20 @@
   "f4_desc": "Dashboard en tiempo real para conserjes con estado de paquetes y gestión de reclamos.",
   "footer_copy": "© 2026 TICS420 - Adquete · Todos los derechos reservados.",
 
+  "login_back": "Volver al inicio",
+  "login_how_to_enter": "¿Cómo deseas entrar?",
+  "login_select_profile": "Selecciona tu perfil para acceder al panel correspondiente.",
+  "login_access_for": "Acceso para",
+  "login_change_profile": "Cambiar perfil",
+  "login_concierge_desc": "Gestión de paquetes y residentes",
+  "login_resident_desc": "Ver mis paquetes y retirar con QR",
+  "login_signin_google": "Entrar con Google",
+  "login_other": "Otras opciones",
+
   "dash_system_title": "Sistema de Conserjería",
   "dash_close_session": "Cerrar Sesión",
   "dash_dev_mode": "Modo Desarrollo",
   "dash_dev_user": "Usuario de Prueba",
-
   "dash_tab_register": "Nuevo Ingreso",
   "dash_tab_inventory": "Inventario / Entrega",
   "dash_tab_notifications": "Notificaciones",
@@ -62,15 +71,11 @@
   "dash_notif_pending_since": "Pendiente desde",
   "dash_notif_no_pending": "Sin notificaciones pendientes. ¡Todo al día!",
 
-  "dash_resident_welcome": "¡Hola",
+  "dash_resident_welcome": "Hola",
   "dash_resident_your_packages": "Tus Paquetes",
   "dash_resident_no_packages": "No tienes paquetes pendientes por el momento.",
   "dash_resident_status_pending": "En bodega",
   "dash_resident_status_delivered": "Retirado",
-
-  "dash_resident_alert_new": "¡Tienes {count} paquete(s) nuevo(s) esperando!",
-  "dash_resident_alert_perishable": "⚠️ ¡ATENCIÓN! Tienes paquetes perecederos (comida) que deben ser retirados pronto.",
-  "dash_resident_alert_urgent": "🔴 Tienes paquetes marcados como URGENTES.",
 
   "dash_residents_title": "Gestión de Residentes",
   "dash_residents_subtitle": "Asigna el departamento a cada residente registrado.",

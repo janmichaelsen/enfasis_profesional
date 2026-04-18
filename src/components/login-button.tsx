@@ -1,25 +1,17 @@
-import { signIn } from "@/auth"
+"use client";
 
-export function LoginButton() {
-    return (
-        <form
-            action={async () => {
-                "use server"
-                await signIn("google")
-            }}
-            className="w-full"
-        >
-            <button
-                type="submit"
-                className="w-full bg-white text-gray-900 font-bold py-3 px-6 rounded-xl hover:bg-gray-100 transition-all flex items-center justify-center gap-3 shadow-lg border border-gray-200"
-            >
-                <img
-                    src="https://authjs.dev/img/providers/google.svg"
-                    alt="Google"
-                    className="w-5 h-5"
-                />
-                Entrar con Google
-            </button>
-        </form>
-    )
+import { signIn } from "next-auth/react";
+
+export function LoginButton({ role, lang }: { role: string; lang: string }) {
+  return (
+    <button
+      onClick={() => signIn("google", { 
+        callbackUrl: `/dashboard?role=${role}&lang=${lang}` 
+      })}
+      className="w-full flex items-center justify-center gap-3 bg-white text-black font-black py-4 rounded-2xl hover:bg-gray-200 transition-all shadow-xl active:scale-95"
+    >
+      <img src="https://authjs.dev/img/providers/google.svg" className="w-5 h-5" alt="Google" />
+      {lang === "es" ? "Entrar con Google" : "Sign in with Google"}
+    </button>
+  );
 }
